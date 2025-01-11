@@ -2,46 +2,37 @@ package com.rcll.droidredux
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.AbstractComposeView
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import com.rcll.core.base.StoreProvider
 import com.rcll.droidredux.ui.theme.DroidReduxTheme
+import com.rcll.mainscreen.MainScreenContent
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            DroidReduxTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        setContentView(
+            ComposeView(this).apply {
+                setViewCompositionStrategy(
+                    strategy = object : ViewCompositionStrategy {
+                        override fun installFor(view: AbstractComposeView): () -> Unit {
+                            return {}
+                        }
+                    }
+                )
+                setContent {
+                    DroidReduxTheme {
+                        StoreProvider(store) {
+                            val state = store.stateFlow.collectAsState()
+                            MainScreenContent(state.value.ui)
+                        }
+                    }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DroidReduxTheme {
-        Greeting("Android")
+        )
     }
 }
