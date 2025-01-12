@@ -3,13 +3,14 @@ package com.rcll.droidredux
 import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
-import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.MonotonicFrameClock
 import androidx.compose.runtime.Recomposer
 import androidx.compose.runtime.collectAsState
+import com.arkivanov.mvikotlin.timetravel.server.TimeTravelServer
 import com.rcll.core.api.IStore
 import com.rcll.core.base.StoreProvider
 import com.rcll.core.composition.BasicApplier
+import com.rcll.droidredux.middlewares.TimeTravelControllerImpl
 import com.rcll.droidredux.redux.AppState
 import com.rcll.droidredux.redux.AppStateHandler
 import com.rcll.droidredux.redux.AppStore
@@ -25,14 +26,26 @@ import kotlin.coroutines.CoroutineContext
 lateinit var store: IStore<AppState>
 
 class MyApplication : Application() {
-    @OptIn(ExperimentalComposeApi::class)
+    val scope = CoroutineScope(SupervisorJob() + Main)
+
+    private val timeTravelController = TimeTravelControllerImpl(scope)
+    private val timeTravelServer = TimeTravelServer(
+        controller = timeTravelController,
+    )
+
     override fun onCreate() {
         super.onCreate()
+        timeTravelServer.start()
 
-        store = AppStore()
+        val appStore = AppStore(scope)
+        store = appStore
 
-        val compositionContext = SupervisorJob() + Main
-        initComposition(compositionContext) {
+        timeTravelController.attachStore(
+            store = appStore,
+            name = "appStore"
+        )
+
+        initComposition(SupervisorJob() + Main) {
             StoreProvider(store) {
                 val state = store.stateFlow.collectAsState()
                 AppStateHandler(state.value)

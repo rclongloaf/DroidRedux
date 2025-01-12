@@ -14,8 +14,8 @@ abstract class BaseStore<TState>(
     private val rootReducer: (TState, IPatch) -> TState
 ) : IStore<TState> {
 
-    private val state = MutableStateFlow<TState>(initialState)
-    override val stateFlow = state.asStateFlow()
+    protected val mutableStateFlow = MutableStateFlow<TState>(initialState)
+    override val stateFlow = mutableStateFlow.asStateFlow()
 
     private val defaultDispatcher = object : IDispatcher {
         override fun dispatch(action: IAction) {
@@ -35,8 +35,8 @@ abstract class BaseStore<TState>(
     private fun dispatchReducer(action: IAction) {
         if (action is IPatch) {
             // todo batch patches
-            val newState = rootReducer(state.value, action)
-            state.value = newState
+            val newState = rootReducer(mutableStateFlow.value, action)
+            mutableStateFlow.value = newState
         }
     }
 

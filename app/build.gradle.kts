@@ -55,6 +55,9 @@ dependencies {
     implementation(project(":features:main-screen"))
     implementation(project(":features:timer"))
 
+    implementation(libs.mvikotlin)
+    implementation(libs.mvikotlin.timetravel)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

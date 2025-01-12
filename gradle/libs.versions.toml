@@ -13,6 +13,7 @@ coroutines = "1.9.0"
 collectionsImmutable = "0.3.8"
 appcompat = "1.7.0"
 material = "1.12.0"
+mvikotlin = "4.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,8 @@ kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android
 kotlin-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm", version.ref = "collectionsImmutable" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+mvikotlin = { module = "com.arkivanov.mvikotlin:mvikotlin", version.ref = "mvikotlin" }
+mvikotlin-timetravel = { module = "com.arkivanov.mvikotlin:mvikotlin-timetravel", version.ref = "mvikotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
