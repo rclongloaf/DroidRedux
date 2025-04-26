@@ -19,6 +19,8 @@ dependencies {
     implementation(libs.kotlin.coroutines)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.runtime)
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
 
     implementation(project(":redux:core"))
 }

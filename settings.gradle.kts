@@ -22,6 +22,8 @@ dependencyResolutionManagement {
 rootProject.name = "DroidRedux"
 include(":app")
 include(":redux:core")
+include(":features:domain")
 include(":features:timer")
 include(":features:main-screen")
 include(":features:navigation")
+include(":helpers:koin")

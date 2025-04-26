@@ -4,14 +4,14 @@ import com.rcll.core.api.IAction
 import com.rcll.core.api.IRunnableAction
 import com.rcll.core.base.BaseMiddleware
 
-class ThunkMiddleware : BaseMiddleware() {
-    override fun dispatch(action: IAction) {
-        val currentStore = currentStore ?: return
+class ThunkMiddleware<TState : Any> : BaseMiddleware<TState>() {
+    override fun reduce(state: TState, action: IAction): TState {
+        val currentStore = currentStore ?: throw IllegalStateException("CurrentStore is not set")
 
         if (action is IRunnableAction) {
             action.run(currentStore)
         }
 
-        next?.dispatch(action)
+        return reduceNext(state, action)
     }
 }

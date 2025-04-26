@@ -1,30 +1,33 @@
 package com.rcll.mainscreen.init.reducers
 
-import com.rcll.core.api.IPatch
+import com.rcll.core.api.IAction
 import com.rcll.mainscreen.MainScreen
 import com.rcll.mainscreen.MainScreenTimerKey
-import com.rcll.mainscreen.init.actions.InitPatch
+import com.rcll.mainscreen.init.actions.InitAction
 import com.rcll.mainscreen.init.actions.OnReady
 import com.rcll.mainscreen.ready.MainTabKey
 import com.rcll.navigation.Navigation
 import com.rcll.navigation.Tab
+import com.rcll.navigation.asNavigationKey
 import com.rcll.timerservice.Timer
 import com.rcll.timerservice.TimerState
-import kotlinx.collections.immutable.ImmutableList
+import com.rcll.timerservice.asTimerKey
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-internal fun reduceInit(state: MainScreen.Init, patch: IPatch) : MainScreen {
-    if (patch !is InitPatch) return state
+internal fun reduceInit(state: MainScreen.Init, action: IAction): MainScreen {
+    if (action !is InitAction) return state
 
-    return when (patch) {
+    return when (action) {
         is OnReady -> {
             MainScreen.Ready(
-                counter = patch.counter,
+                counter = action.counter,
                 timer = Timer(
-                    key = MainScreenTimerKey,
-                    state = TimerState.Active
+                    key = MainScreenTimerKey.asTimerKey(),
+                    timerState = TimerState.Active
                 ),
                 navigation = Navigation<MainTabKey, String>(
+                    key = MainScreenNavigation.asNavigationKey(),
                     tabs = navigationTabs(),
                     activeTabKey = MainTabKey.Profile
                 )
@@ -33,7 +36,9 @@ internal fun reduceInit(state: MainScreen.Init, patch: IPatch) : MainScreen {
     }
 }
 
-private fun navigationTabs() : ImmutableList<Tab<MainTabKey, String>> {
+object MainScreenNavigation
+
+private fun navigationTabs(): PersistentList<Tab<MainTabKey, String>> {
     return persistentListOf(
         Tab(
             key = MainTabKey.Profile,

@@ -1,4 +1,4 @@
-package com.rcll.mainscreen;
+package com.rcll.mainscreen
 
 import com.rcll.mainscreen.ready.MainTabKey
 import com.rcll.navigation.Navigation
@@ -10,7 +10,26 @@ sealed interface MainScreen {
         val counter: Int,
         val timer: Timer,
         val navigation: Navigation<MainTabKey, String>
-    ) : MainScreen
+    ) : MainScreen {
+        fun smartCopy(
+            newCounter: Int,
+            newTimer: Timer,
+            newNavigation: Navigation<MainTabKey, String>
+        ): Ready {
+            if (newCounter != counter ||
+                newTimer !== timer ||
+                newNavigation !== navigation
+            ) {
+                return Ready(
+                    counter = newCounter,
+                    timer = newTimer,
+                    navigation = newNavigation
+                )
+            }
+
+            return this
+        }
+    }
 }
 
 internal data object MainScreenTimerKey

@@ -17,6 +17,7 @@ kotlin {
 
 dependencies {
     implementation(libs.kotlin.coroutines)
+    implementation(libs.kotlin.collections.immutable)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.runtime)
 }

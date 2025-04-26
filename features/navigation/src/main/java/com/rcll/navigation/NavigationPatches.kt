@@ -1,23 +1,13 @@
 package com.rcll.navigation
 
-import com.rcll.core.api.IPatch
+import com.rcll.core.api.IAction
 
-sealed interface NavigationPatch: IPatch
+sealed interface NavigationAction<TKey, TValue> : IAction {
+    data class AddTab<TKey, TValue>(
+        val tab: Tab<TKey, TValue>
+    ) : NavigationAction<TKey, TValue>
 
-data class AddTab<TKey, TValue>(
-    val tab: Tab<TKey, TValue>
-) : NavigationPatch {
-    @Suppress("UNCHECKED_CAST")
-    inline fun <reified K, reified V> unsafeCast() : AddTab<K, V> {
-        return this as AddTab<K, V>
-    }
-}
-
-data class SelectTab<TKey>(
-    val tabKey: TKey
-) : NavigationPatch {
-    @Suppress("UNCHECKED_CAST")
-    inline fun <reified TKey> unsafeCast() : SelectTab<TKey> {
-        return this as SelectTab<TKey>
-    }
+    data class SelectTab<TKey, TValue>(
+        val tabKey: TKey
+    ) : NavigationAction<TKey, TValue>
 }

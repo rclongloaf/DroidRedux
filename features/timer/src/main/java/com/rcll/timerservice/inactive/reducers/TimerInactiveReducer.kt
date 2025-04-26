@@ -1,17 +1,17 @@
 package com.rcll.timerservice.inactive.reducers
 
-import com.rcll.core.api.IPatch
+import com.rcll.core.api.IAction
 import com.rcll.timerservice.TimerState
 import com.rcll.timerservice.inactive.actions.ActivateTimer
-import com.rcll.timerservice.inactive.actions.InactiveStatePatch
+import com.rcll.timerservice.inactive.actions.InactiveStateAction
 
 
-internal fun reduceInactive(state: TimerState.Inactive, key: Any, patch: IPatch): TimerState {
-    if (patch !is InactiveStatePatch) return state
+internal fun reduceInactive(state: TimerState.Inactive, key: Any, action: IAction): TimerState {
+    if (action !is InactiveStateAction) return state
 
-    return when (patch) {
+    return when (action) {
         is ActivateTimer -> {
-            if (patch.key != key) return state
+            if (action.key != key) return state
 
             TimerState.Active
         }

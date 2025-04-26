@@ -1,6 +1,6 @@
 package com.rcll.core.api
 
-interface IMiddleware : IDispatcher {
-    fun setNextDispatcher(dispatcher: IDispatcher)
-    fun setStore(store: IStore<*>)
+interface IMiddleware<TState : Any> : IReducer<TState> {
+    fun setNextReducer(reducer: IReducer<TState>)
+    fun setStore(store: IStore<TState>)
 }

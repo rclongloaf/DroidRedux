@@ -7,11 +7,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.rcll.core.base.StoreProvider
+import com.rcll.core.base.StoreDispatcherProvider
+import com.rcll.core.base.StoreStateProvider
+import com.rcll.core.middlewares.dynamic.DynamicMiddlewareManagerProvider
+import com.rcll.core.middlewares.dynamic.holder.DynamicMiddlewaresHolder
+import com.rcll.droidredux.redux.AppStore
 import com.rcll.droidredux.ui.theme.DroidReduxTheme
 import com.rcll.mainscreen.MainScreenContent
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), KoinComponent {
+    private val dynamicMiddlewaresHolder: DynamicMiddlewaresHolder by inject()
+    private val store: AppStore by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,9 +35,14 @@ class MainActivity : ComponentActivity() {
                 )
                 setContent {
                     DroidReduxTheme {
-                        StoreProvider(store) {
-                            val state = store.stateFlow.collectAsState()
-                            MainScreenContent(state.value.ui)
+                        val state = store.stateFlow.collectAsState()
+
+                        StoreStateProvider(state) {
+                            StoreDispatcherProvider(store) {
+                                DynamicMiddlewareManagerProvider(dynamicMiddlewaresHolder) {
+                                    MainScreenContent(state.value.ui)
+                                }
+                            }
                         }
                     }
                 }

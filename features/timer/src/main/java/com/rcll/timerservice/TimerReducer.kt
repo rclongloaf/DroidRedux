@@ -1,20 +1,23 @@
 package com.rcll.timerservice
 
-import com.rcll.core.api.IPatch
+import com.rcll.core.api.IAction
+import com.rcll.core.api.IReducer
 import com.rcll.timerservice.active.reducers.reduceActive
 import com.rcll.timerservice.inactive.reducers.reduceInactive
 
-fun reduceTimer(timer: Timer, patch: IPatch): Timer {
-    val state = timer.state
-    val newState = when (state) {
-        is TimerState.Active -> reduceActive(state, timer.key, patch)
-        is TimerState.Inactive -> reduceInactive(state, timer.key, patch)
+interface TimerReducer : IReducer<Timer>
+
+class TimerReducerImpl : TimerReducer {
+    override fun reduce(state: Timer, action: IAction): Timer {
+        val newState = when (val timerState = state.timerState) {
+            is TimerState.Active -> reduceActive(timerState, state.key, action)
+            is TimerState.Inactive -> reduceInactive(timerState, state.key, action)
+        }
+
+        return state.smartCopy(
+            key = state.key,
+            state = newState
+        )
     }
 
-    if (timer.state == newState) return timer
-
-    return Timer(
-        key = timer.key,
-        state = newState
-    )
 }

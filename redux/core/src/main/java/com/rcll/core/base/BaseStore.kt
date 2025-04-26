@@ -1,52 +1,43 @@
 package com.rcll.core.base
 
 import com.rcll.core.api.IAction
-import com.rcll.core.api.IDispatcher
 import com.rcll.core.api.IMiddleware
-import com.rcll.core.api.IPatch
+import com.rcll.core.api.IReducer
 import com.rcll.core.api.IStore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-abstract class BaseStore<TState>(
+abstract class BaseStore<TState : Any>(
     initialState: TState,
-    middlewares: List<IMiddleware>,
-    private val rootReducer: (TState, IPatch) -> TState
+    middlewares: List<IMiddleware<TState>>,
+    private val rootReducer: IReducer<TState>,
+    override val scope: CoroutineScope
 ) : IStore<TState> {
 
-    protected val mutableStateFlow = MutableStateFlow<TState>(initialState)
+    protected val mutableStateFlow = MutableStateFlow(initialState)
     override val stateFlow = mutableStateFlow.asStateFlow()
 
-    private val defaultDispatcher = object : IDispatcher {
-        override fun dispatch(action: IAction) {
-            dispatchReducer(action)
-        }
-    }
-    private var nextDispatcher : IDispatcher = defaultDispatcher
+    private var nextReducer: IReducer<TState> = rootReducer
 
     init {
         applyMiddlewares(middlewares)
     }
 
     override fun dispatch(action: IAction) {
-        nextDispatcher.dispatch(action)
-    }
-
-    private fun dispatchReducer(action: IAction) {
-        if (action is IPatch) {
-            // todo batch patches
-            val newState = rootReducer(mutableStateFlow.value, action)
-            mutableStateFlow.value = newState
+        scope.launch {
+            mutableStateFlow.value = nextReducer.reduce(mutableStateFlow.value, action)
         }
     }
 
-    private fun applyMiddlewares(middlewares: List<IMiddleware>) {
-        nextDispatcher = defaultDispatcher
+    private fun applyMiddlewares(middlewares: List<IMiddleware<TState>>) {
+        nextReducer = rootReducer
 
         for (middleware in middlewares.reversed()) {
             middleware.setStore(this)
-            middleware.setNextDispatcher(nextDispatcher)
-            nextDispatcher = middleware
+            middleware.setNextReducer(nextReducer)
+            nextReducer = middleware
         }
     }
 }

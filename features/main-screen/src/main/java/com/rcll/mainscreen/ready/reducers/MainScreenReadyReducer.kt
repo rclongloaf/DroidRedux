@@ -1,44 +1,45 @@
 package com.rcll.mainscreen.ready.reducers
 
-import com.rcll.core.api.IPatch
+import com.rcll.core.api.IAction
+import com.rcll.core.api.IReducer
 import com.rcll.mainscreen.MainScreen
-import com.rcll.mainscreen.ready.actions.CounterPatch
-import com.rcll.navigation.reduceNavigation
-import com.rcll.timerservice.reduceTimer
+import com.rcll.mainscreen.ready.actions.CounterAction
+import com.rcll.timerservice.TimerReducer
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-internal fun reduceReady(state: MainScreen.Ready, patch: IPatch) : MainScreen {
-    val newTimer = reduceTimer(state.timer, patch)
-    val newCounter = reduceCounter(state.counter, patch)
-    val navigation = reduceNavigation(state.navigation, patch) { data, patch ->
-        return@reduceNavigation data
+interface MainScreenReadyReducer : IReducer<MainScreen.Ready>
+
+class MainScreenReadyReducerImpl : MainScreenReadyReducer, KoinComponent {
+    private val timerReducer: TimerReducer by inject()
+    private val navigationReducer: MainNavigationReducer by inject()
+
+    override fun reduce(state: MainScreen.Ready, action: IAction): MainScreen.Ready {
+        val newTimer = timerReducer.reduce(state.timer, action)
+        val newCounter = reduceCounter(state.counter, action)
+        val newNavigation = navigationReducer.reduce(state.navigation, action)
+
+        return state.smartCopy(
+            newCounter = newCounter,
+            newTimer = newTimer,
+            newNavigation = newNavigation
+        )
     }
 
-    if (
-        state.counter == newCounter &&
-        state.timer == newTimer &&
-        state.navigation == navigation
-    ) return state
+    private fun reduceCounter(counter: Int, action: IAction): Int {
+        if (action !is CounterAction) return counter
 
-    return MainScreen.Ready(
-        counter = newCounter,
-        timer = newTimer,
-        navigation = navigation
-    )
-}
-
-internal fun reduceCounter(counter: Int, patch: IPatch) : Int{
-    if (patch !is CounterPatch) return counter
-
-    return when (patch) {
-        is CounterPatch.Increase -> increaseCounter(counter)
-        is CounterPatch.Decrease -> decreaseCounter(counter)
+        return when (action) {
+            is CounterAction.Increase -> increaseCounter(counter)
+            is CounterAction.Decrease -> decreaseCounter(counter)
+        }
     }
-}
 
-internal fun increaseCounter(counter: Int) : Int {
-    return counter + 1
-}
+    private fun increaseCounter(counter: Int): Int {
+        return counter + 1
+    }
 
-internal fun decreaseCounter(counter: Int) : Int {
-    return counter - 1
+    private fun decreaseCounter(counter: Int): Int {
+        return counter - 1
+    }
 }

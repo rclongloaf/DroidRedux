@@ -1,66 +1,65 @@
 package com.rcll.navigation
 
-import com.rcll.core.api.IPatch
+import com.rcll.core.api.IAction
+import com.rcll.core.api.IReducer
+import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
-inline fun <reified TKey, reified TValue> reduceNavigation(
-    navigation: Navigation<TKey, TValue>,
-    patch: IPatch,
-    crossinline tabsReducers: (TValue, IPatch) -> TValue,
-) : Navigation<TKey, TValue> {
-    var tabs = navigation.tabs
+interface NavigationReducer<TKey, TValue> : IReducer<Navigation<TKey, TValue>>
 
-    if (patch is NavigationPatch) { //todo compare to navigation key
-        return when (patch) {
-            is AddTab<*, *> -> applyAddTab(navigation, patch.unsafeCast())
-            is SelectTab<*> -> applySelectTab(navigation, patch.unsafeCast())
-        }
-    }
+open class NavigationReducerImpl<TKey, TValue>(
+    private val tabReducer: IReducer<TValue>,
+) : NavigationReducer<TKey, TValue> {
+    @Suppress("UNCHECKED_CAST")
+    override fun reduce(
+        state: Navigation<TKey, TValue>,
+        action: IAction
+    ): Navigation<TKey, TValue> {
+        val newTabs = state.tabs.mutate { mutableTabs ->
+            state.tabs.forEachIndexed { index, tab ->
+                val newValue = tabReducer.reduce(tab.data, action)
 
-    var newValues: MutableMap<TKey, TValue>? = null
-
-    for (tab in navigation.tabs) {
-        val newValue = tabsReducers.invoke(tab.data, patch)
-
-        if (newValue != tab.data) {
-            if (newValues == null) {
-                newValues = mutableMapOf()
+                if (newValue != tab.data) {
+                    mutableTabs[index] = Tab(tab.key, newValue)
+                }
             }
-            newValues[tab.key] = newValue
         }
-    }
 
-    if (newValues != null) {
-        tabs = tabs.map { tab ->
-            newValues[tab.key]?.let { data ->
-                Tab<TKey, TValue>(
-                    key = tab.key,
-                    data = data
+        val newState = state.smartCopy(
+            key = state.key,
+            tabs = newTabs,
+            activeTabKey = state.activeTabKey
+        )
+
+        (action as? NavigationAction<TKey, TValue>)?.let { navigationAction ->
+            return when (navigationAction) {
+                is NavigationAction.AddTab<TKey, TValue> -> applyAddTab(newState, navigationAction)
+                is NavigationAction.SelectTab<TKey, TValue> -> applySelectTab(
+                    newState,
+                    navigationAction
                 )
-            } ?: tab
-        }.toImmutableList()
+            }
+        }
+
+        return newState
     }
 
-    return navigation
-}
+    private fun <TKey, TValue> applyAddTab(
+        navigation: Navigation<TKey, TValue>,
+        action: NavigationAction.AddTab<TKey, TValue>
+    ): Navigation<TKey, TValue> {
+        return navigation.copy(
+            tabs = persistentListOf(action.tab).addAll(navigation.tabs)
+        )
+    }
 
-@PublishedApi
-internal fun <TKey, TValue> applyAddTab(
-    navigation: Navigation<TKey, TValue>,
-    patch: AddTab<TKey, TValue>
-) : Navigation<TKey, TValue> {
-    return navigation.copy(
-        tabs = persistentListOf(patch.tab).addAll(navigation.tabs)
-    )
-}
+    private fun <TKey, TValue> applySelectTab(
+        navigation: Navigation<TKey, TValue>,
+        action: NavigationAction.SelectTab<TKey, TValue>
+    ): Navigation<TKey, TValue> {
+        return navigation.copy(
+            activeTabKey = action.tabKey
+        )
+    }
 
-@PublishedApi
-internal fun <TKey, TValue> applySelectTab(
-    navigation: Navigation<TKey, TValue>,
-    patch: SelectTab<TKey>
-) : Navigation <TKey, TValue>{
-    return navigation.copy(
-        activeTabKey = patch.tabKey
-    )
 }

@@ -50,10 +50,14 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.kotlin.collections.immutable)
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
 
     implementation(project(":redux:core"))
+    implementation(project(":features:domain"))
     implementation(project(":features:main-screen"))
     implementation(project(":features:timer"))
+    implementation(project(":helpers:koin"))
 
     implementation(libs.mvikotlin)
     implementation(libs.mvikotlin.timetravel)

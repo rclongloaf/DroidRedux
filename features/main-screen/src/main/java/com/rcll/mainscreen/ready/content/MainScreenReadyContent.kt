@@ -4,14 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.rcll.core.base.LocalStore
+import com.rcll.core.base.LocalStoreDispatcher
 import com.rcll.mainscreen.MainScreen
+import com.rcll.mainscreen.ready.MainTabKey
+import com.rcll.navigation.NavigationAction
 import com.rcll.navigation.NavigationContent
-import com.rcll.navigation.SelectTab
 
-@Suppress("NOTHING_TO_INLINE")
 @Composable
-internal inline fun MainScreenReadyContent(state: MainScreen.Ready) {
+internal fun MainScreenReadyContent(state: MainScreen.Ready) {
     MainScreenReadyContentHandler(state)
 
     Column {
@@ -21,16 +21,18 @@ internal inline fun MainScreenReadyContent(state: MainScreen.Ready) {
         val navigation = state.navigation
 
         NavigationContent(navigation) { tab ->
-            val store = LocalStore.current
+            val store = LocalStoreDispatcher.current
 
             // handle only current tab state
             Text(tab.data)
             Button(
                 onClick = {
                     //todo dispatch click action
-                    val notSelectedTabs = navigation.tabs.filter { tab -> tab.key != navigation.activeTabKey }
-                    val randomTabKey = notSelectedTabs[System.currentTimeMillis().toInt() % notSelectedTabs.size].key
-                    store.dispatch(SelectTab(randomTabKey))
+                    val notSelectedTabs =
+                        navigation.tabs.filter { tab -> tab.key != navigation.activeTabKey }
+                    val randomTabKey = notSelectedTabs[System.currentTimeMillis()
+                        .toInt() % notSelectedTabs.size].key
+                    store.dispatch(NavigationAction.SelectTab<MainTabKey, String>(randomTabKey))
                 }
             ) {
                 Text(text = "Select random tab")
