@@ -4,8 +4,10 @@ import android.app.Application
 import com.rcll.core.api.IStore
 import com.rcll.core.middlewares.dynamic.holder.DynamicMiddlewaresHolder
 import com.rcll.core.middlewares.dynamic.holder.DynamicMiddlewaresHolderImpl
+import com.rcll.core.ui.UIStateProvider
 import com.rcll.droidredux.redux.AppStore
 import com.rcll.droidredux.redux.appStateModule
+import com.rcll.droidredux.ui.AppUIStateProvider
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.createdAtStart
@@ -27,6 +29,9 @@ class MyApplication : Application(), KoinComponent {
 val appModule = module {
     single<DynamicMiddlewaresHolder> { DynamicMiddlewaresHolderImpl() }
     singleOf(::AppStore) bind IStore::class withOptions {
+        createdAtStart()
+    }
+    singleOf(::AppUIStateProvider) bind UIStateProvider::class withOptions {
         createdAtStart()
     }
 

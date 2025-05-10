@@ -37,6 +37,7 @@ dependencies {
 
     implementation(project(":redux:core"))
     implementation(project(":features:timer"))
+    implementation(project(":helpers:compose"))
 
     implementation(libs.kotlin.collections.immutable)
     implementation(libs.androidx.activity.compose)

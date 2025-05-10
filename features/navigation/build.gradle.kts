@@ -35,6 +35,7 @@ android {
 
 dependencies {
     implementation(project(":redux:core"))
+    implementation(project(":helpers:compose"))
 
     implementation(libs.kotlin.collections.immutable)
 

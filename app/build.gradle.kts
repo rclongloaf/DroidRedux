@@ -58,6 +58,7 @@ dependencies {
     implementation(project(":features:main-screen"))
     implementation(project(":features:timer"))
     implementation(project(":helpers:koin"))
+    implementation(project(":helpers:compose"))
 
     implementation(libs.mvikotlin)
     implementation(libs.mvikotlin.timetravel)

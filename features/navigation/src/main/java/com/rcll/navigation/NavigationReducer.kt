@@ -48,6 +48,8 @@ open class NavigationReducerImpl<TKey, TValue>(
         navigation: Navigation<TKey, TValue>,
         action: NavigationAction.AddTab<TKey, TValue>
     ): Navigation<TKey, TValue> {
+        if (navigation.key != action.navigationKey) return navigation
+
         return navigation.copy(
             tabs = persistentListOf(action.tab).addAll(navigation.tabs)
         )
@@ -57,6 +59,8 @@ open class NavigationReducerImpl<TKey, TValue>(
         navigation: Navigation<TKey, TValue>,
         action: NavigationAction.SelectTab<TKey, TValue>
     ): Navigation<TKey, TValue> {
+        if (navigation.key != action.navigationKey) return navigation
+
         return navigation.copy(
             activeTabKey = action.tabKey
         )

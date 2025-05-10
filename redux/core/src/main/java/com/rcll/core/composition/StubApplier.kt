@@ -2,7 +2,7 @@ package com.rcll.core.composition
 
 import androidx.compose.runtime.AbstractApplier
 
-class BasicApplier() : AbstractApplier<Any>(Unit) {
+class StubApplier : AbstractApplier<Any>(Unit) {
     override fun insertBottomUp(index: Int, instance: Any) {
         // noting
     }

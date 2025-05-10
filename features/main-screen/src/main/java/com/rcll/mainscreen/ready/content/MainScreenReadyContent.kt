@@ -1,42 +1,38 @@
 package com.rcll.mainscreen.ready.content
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.rcll.core.base.LocalStoreDispatcher
-import com.rcll.mainscreen.MainScreen
-import com.rcll.mainscreen.ready.MainTabKey
-import com.rcll.navigation.NavigationAction
-import com.rcll.navigation.NavigationContent
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.rcll.mainscreen.ui.MainScreenUI
 
 @Composable
-internal fun MainScreenReadyContent(state: MainScreen.Ready) {
-    MainScreenReadyContentHandler(state)
+internal fun MainScreenReadyContent(mainScreen: MainScreenUI.Ready) {
+    val navigation = mainScreen.navigationUI.value
 
     Column {
         Text(text = "Ready state")
-        Text(text = "${state.counter}")
+        Text(text = "${mainScreen.counter}")
 
-        val navigation = state.navigation
-
-        NavigationContent(navigation) { tab ->
-            val store = LocalStoreDispatcher.current
-
-            // handle only current tab state
-            Text(tab.data)
-            Button(
-                onClick = {
-                    //todo dispatch click action
-                    val notSelectedTabs =
-                        navigation.tabs.filter { tab -> tab.key != navigation.activeTabKey }
-                    val randomTabKey = notSelectedTabs[System.currentTimeMillis()
-                        .toInt() % notSelectedTabs.size].key
-                    store.dispatch(NavigationAction.SelectTab<MainTabKey, String>(randomTabKey))
-                }
-            ) {
-                Text(text = "Select random tab")
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            navigation.tabs.value.forEach { tab ->
+                Text(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(onClick = tab.onClick)
+                        .then(if (tab.isActive) Modifier.background(Color.Green) else Modifier),
+                    text = tab.title
+                )
             }
         }
+
+        Text(text = navigation.activeTabUI.value.title)
     }
 }
