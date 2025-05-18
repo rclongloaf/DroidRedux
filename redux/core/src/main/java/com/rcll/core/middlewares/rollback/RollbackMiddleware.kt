@@ -10,11 +10,14 @@ class RollbackMiddleware<TState : Any> : BaseMiddleware<TState>() {
         var newState = state
         try {
             newState = reduceNext(state, action)
-        } catch(e: FatalTransactionException) {
-            // todo log exception and throw it
+        } catch (e: FatalTransactionException) {
+            // todo log exception and maybe throw it
             throw e
         } catch (e: TransactionException) {
             // todo log exception and ignore it
+        } catch (e: Throwable) {
+            // todo log exception and throw
+            throw e
         }
 
         return newState

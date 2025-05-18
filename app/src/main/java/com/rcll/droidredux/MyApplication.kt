@@ -6,9 +6,11 @@ import com.rcll.core.middlewares.concat.ConcatReducersProvider
 import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManager
 import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManagerImpl
 import com.rcll.core.ui.UIStateProvider
+import com.rcll.droidredux.feature.AppFeatureComposition
 import com.rcll.droidredux.redux.AppStore
 import com.rcll.droidredux.redux.appStateModule
 import com.rcll.droidredux.redux.reducer.concat.providers.AppConcatReducersProvider
+import com.rcll.droidredux.ui.AppUIMapperComposition
 import com.rcll.droidredux.ui.AppUIStateProvider
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.startKoin
@@ -34,7 +36,11 @@ val appModule = module {
     singleOf(::AppStore) bind Store::class withOptions {
         createdAtStart()
     }
-    singleOf(::AppUIStateProvider) bind UIStateProvider::class withOptions {
+    singleOf(::AppFeatureComposition) withOptions {
+        createdAtStart()
+    }
+    singleOf(::AppUIStateProvider) bind UIStateProvider::class
+    singleOf(::AppUIMapperComposition) withOptions {
         createdAtStart()
     }
 

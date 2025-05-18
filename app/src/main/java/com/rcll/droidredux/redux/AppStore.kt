@@ -18,7 +18,6 @@ class AppStore(
 ) : BaseStore<AppState>(
     initialState = AppState(),
     middlewares = listOf(
-        AppCompositionMiddleware(),
         RollbackMiddleware(),
         ConcatMiddleware(concatReducersProvider),
         DynamicMiddleware(dynamicActionObserversManager)

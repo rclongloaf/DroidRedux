@@ -11,6 +11,7 @@ import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManager
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+@Deprecated("Use AppFeatureComposition instead")
 class AppCompositionMiddleware : CompositionMiddleware<AppState>(), KoinComponent {
     private val dynamicActionObserversManager: DynamicActionObserversManager by inject()
 

@@ -12,6 +12,7 @@ import com.rcll.core.base.BaseMiddleware
 import com.rcll.core.composition.runBypassComposition
 import com.rcll.core.dispatcher.ImmediateCoroutineDispatcher
 
+@Deprecated("Use FeatureComposition instead")
 abstract class CompositionMiddleware<TState : Any> : BaseMiddleware<TState>() {
     private var compositionState: MutableState<TState>? = null
 
