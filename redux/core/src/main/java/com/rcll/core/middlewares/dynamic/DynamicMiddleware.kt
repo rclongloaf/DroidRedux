@@ -1,69 +1,62 @@
 package com.rcll.core.middlewares.dynamic
 
-import com.rcll.core.api.IAction
-import com.rcll.core.api.IReducer
-import kotlin.reflect.KClass
-import kotlin.reflect.cast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.compositionLocalOf
+import com.rcll.core.api.Action
+import com.rcll.core.base.BaseMiddleware
+import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManager
+import kotlinx.collections.immutable.persistentListOf
 
-abstract class DynamicMiddleware<TAction : IAction> {
-    /**
-     * Тип экшена, который обрабатывается этим динмическим мидлваром.
-     */
-    abstract val actionClassFilter: KClass<TAction>
-
-    fun <TState> reduceBeforeNextReducerUntyped(
-        state: TState,
-        action: IAction,
-        newActionReducer: IReducer<TState>
-    ): TState {
-        val typedAction = actionClassFilter.cast(action)
-        return reduceBeforeNextReducer(state, typedAction, newActionReducer)
-    }
+class DynamicMiddleware<TState : Any>(
+    private val dynamicActionObserversManager: DynamicActionObserversManager
+) : BaseMiddleware<TState>() {
 
     /**
-     * Вызывается перед вызовом следующей миддлвары (перед выполнением редьюсера).
-     * Здесь следует диспатчить экшены, которые должны применяться ниже по дереву
-     * (в дочерних стейтах).
-     * @param state Текущее состояние.
-     * @param action Обрабатываемый экшен с типом [actionClassFilter].
-     * @param newActionReducer Редюсер для обработки новых экшенов. Для action будет вызван reduce
-     * после отработки этой функции.
-     * @return Если применяется новый экшен, то возвращается результат actionReduce с новым экшеном
-     * в качестве аргумента, иначе возвращается [state]
+     * Выполняет отправку экшенов в динамически изменяемый список
      */
-    open fun <TState> reduceBeforeNextReducer(
-        state: TState,
-        action: TAction,
-        newActionReducer: IReducer<TState>
-    ): TState {
-        return state
-    }
+    override fun reduce(state: TState, action: Action): TState {
+        val dynamicMiddlewares = dynamicActionObserversManager
+            .dynamicActionObserversMap[action::class]
+            ?: persistentListOf()
 
-    fun <TState> reduceAfterNextReducerUntyped(
-        state: TState,
-        action: IAction,
-        newActionReducer: IReducer<TState>
-    ): TState {
-        val typedAction = actionClassFilter.cast(action)
-        return reduceAfterNextReducer(state, typedAction, newActionReducer)
-    }
+        dynamicMiddlewares.forEach { dynamicMiddleware ->
+            dynamicMiddleware.observeActionUntyped(action)
+        }
 
-    /**
-     * Вызывается после вызова следующей миддлвары (после выполнения редьюсера).
-     * Здесь следует диспатчить экшены, которые должны применяться выше по дереву
-     * (в родительском стейте).
-     * @param state Текущее состояние.
-     * @param action Обрабатываемый экшен с типом [actionClassFilter].
-     * @param newActionReducer Редюсер для обработки новых экшенов. Для action уже был вызван reduce
-     * перед этой функцией.
-     * @return Если применяется новый экшен, то возвращается результат actionReduce с новым экшеном
-     * в качестве аргумента, иначе возвращается [state]
-     */
-    open fun <TState> reduceAfterNextReducer(
-        state: TState,
-        action: TAction,
-        newActionReducer: IReducer<TState>
-    ): TState {
-        return state
+        return reduceNext(state, action)
+    }
+}
+
+val LocalDynamicActionObserversManager =
+    compositionLocalOf<DynamicActionObserversManager> { error("No class provided") }
+
+@Composable
+inline fun DynamicMiddlewareManagerProvider(
+    manager: DynamicActionObserversManager,
+    crossinline content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(LocalDynamicActionObserversManager provides manager) {
+        content()
+    }
+}
+
+
+@Composable
+@NonRestartableComposable
+fun <TAction : Action> WithDynamicActionObserver(
+    key: Any,
+    dynamicActionObserver: DynamicActionObserver<TAction>
+) {
+    val manager = LocalDynamicActionObserversManager.current
+
+    DisposableEffect(key, dynamicActionObserver) {
+        manager.subscribe(dynamicActionObserver)
+
+        onDispose {
+            manager.unsubscribe(dynamicActionObserver)
+        }
     }
 }

@@ -3,9 +3,7 @@ package com.rcll.domain.provider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import com.rcll.core.base.LocalStoreDispatcher
-import com.rcll.core.middlewares.dynamic.WithDynamicMiddleware
 import com.rcll.domain.dto.UserData
 import kotlinx.coroutines.delay
 
@@ -14,8 +12,6 @@ fun UsersProviderFeature(
     usersProvider: UsersProvider
 ) {
     val dispatcher = LocalStoreDispatcher.current
-
-    WithDynamicMiddleware(Unit, remember { UsersProviderDynamicMiddleware() })
 
     usersProvider.fetchingStatusSet.forEach { userId ->
         key(userId) {

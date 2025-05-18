@@ -1,8 +1,8 @@
 package com.rcll.navigation
 
-import com.rcll.core.api.IAction
+import com.rcll.core.api.Action
 
-sealed interface NavigationAction<TKey, TValue> : IAction {
+sealed interface NavigationAction<TKey, TValue> : Action {
     data class AddTab<TKey, TValue>(
         val navigationKey: NavigationKey,
         val tab: Tab<TKey, TValue>

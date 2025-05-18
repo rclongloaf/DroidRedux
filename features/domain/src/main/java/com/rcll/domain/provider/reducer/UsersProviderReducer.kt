@@ -1,14 +1,16 @@
-package com.rcll.domain.provider
+package com.rcll.domain.provider.reducer
 
-import com.rcll.core.api.IAction
-import com.rcll.core.api.IReducer
+import com.rcll.core.api.Action
+import com.rcll.core.api.Reducer
+import com.rcll.domain.provider.UsersProvider
+import com.rcll.domain.provider.UsersProviderAction
 import kotlinx.collections.immutable.persistentHashMapOf
 import kotlinx.collections.immutable.persistentHashSetOf
 
-interface UsersProviderReducer : IReducer<UsersProvider>
+interface UsersProviderReducer : Reducer<UsersProvider>
 
 class UsersProviderReducerImpl : UsersProviderReducer {
-    override fun reduce(state: UsersProvider, action: IAction): UsersProvider {
+    override fun reduce(state: UsersProvider, action: Action): UsersProvider {
         if (action !is UsersProviderAction) return state
 
         var fetchingStatusSet = state.fetchingStatusSet

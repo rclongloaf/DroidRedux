@@ -3,7 +3,7 @@ package com.rcll.droidredux.redux
 import androidx.compose.runtime.Composable
 import com.rcll.domain.provider.UsersProviderFeature
 import com.rcll.droidredux.redux.entities.Entities
-import com.rcll.mainscreen.MainScreenFeature
+import com.rcll.mainscreen.common.MainScreenFeature
 import com.rcll.timerservice.TimerFeature
 
 @Composable

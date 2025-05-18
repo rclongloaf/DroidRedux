@@ -1,12 +1,14 @@
 package com.rcll.droidredux
 
 import android.app.Application
-import com.rcll.core.api.IStore
-import com.rcll.core.middlewares.dynamic.holder.DynamicMiddlewaresHolder
-import com.rcll.core.middlewares.dynamic.holder.DynamicMiddlewaresHolderImpl
+import com.rcll.core.api.Store
+import com.rcll.core.middlewares.concat.ConcatReducersProvider
+import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManager
+import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManagerImpl
 import com.rcll.core.ui.UIStateProvider
 import com.rcll.droidredux.redux.AppStore
 import com.rcll.droidredux.redux.appStateModule
+import com.rcll.droidredux.redux.reducer.concat.providers.AppConcatReducersProvider
 import com.rcll.droidredux.ui.AppUIStateProvider
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.startKoin
@@ -27,8 +29,9 @@ class MyApplication : Application(), KoinComponent {
 }
 
 val appModule = module {
-    single<DynamicMiddlewaresHolder> { DynamicMiddlewaresHolderImpl() }
-    singleOf(::AppStore) bind IStore::class withOptions {
+    single<ConcatReducersProvider> { AppConcatReducersProvider() }
+    single<DynamicActionObserversManager> { DynamicActionObserversManagerImpl() }
+    singleOf(::AppStore) bind Store::class withOptions {
         createdAtStart()
     }
     singleOf(::AppUIStateProvider) bind UIStateProvider::class withOptions {

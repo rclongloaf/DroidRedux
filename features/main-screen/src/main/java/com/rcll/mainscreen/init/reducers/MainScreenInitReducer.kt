@@ -1,6 +1,6 @@
 package com.rcll.mainscreen.init.reducers
 
-import com.rcll.core.api.IAction
+import com.rcll.core.api.Action
 import com.rcll.mainscreen.MainScreen
 import com.rcll.mainscreen.MainScreenTimerKey
 import com.rcll.mainscreen.init.actions.InitAction
@@ -15,7 +15,7 @@ import com.rcll.timerservice.asTimerKey
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
-internal fun reduceInit(state: MainScreen.Init, action: IAction): MainScreen {
+internal fun reduceInit(state: MainScreen.Init, action: Action): MainScreen {
     if (action !is InitAction) return state
 
     return when (action) {

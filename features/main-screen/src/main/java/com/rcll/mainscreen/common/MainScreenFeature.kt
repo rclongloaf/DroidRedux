@@ -1,8 +1,9 @@
-package com.rcll.mainscreen
+package com.rcll.mainscreen.common
 
 import androidx.compose.runtime.Composable
+import com.rcll.mainscreen.MainScreen
 import com.rcll.mainscreen.init.MainScreenInitFeature
-import com.rcll.mainscreen.ready.handlers.MainScreenReadyFeature
+import com.rcll.mainscreen.ready.feature.MainScreenReadyFeature
 
 @Composable
 fun MainScreenFeature(mainScreen: MainScreen) {

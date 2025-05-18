@@ -3,7 +3,7 @@ package com.rcll.core.api
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
-interface IStore<TState : Any> : IDispatcher {
+interface Store<TState : Any> : Dispatcher {
     /**
      * Поток состояния стора.
      */

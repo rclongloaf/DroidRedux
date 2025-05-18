@@ -5,9 +5,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.Snapshot
-import com.rcll.core.api.IAction
-import com.rcll.core.api.IDispatcher
-import com.rcll.core.api.IStore
+import com.rcll.core.api.Action
+import com.rcll.core.api.Dispatcher
+import com.rcll.core.api.Store
 import com.rcll.core.base.BaseMiddleware
 import com.rcll.core.composition.runBypassComposition
 import com.rcll.core.dispatcher.ImmediateCoroutineDispatcher
@@ -16,11 +16,11 @@ abstract class CompositionMiddleware<TState : Any> : BaseMiddleware<TState>() {
     private var compositionState: MutableState<TState>? = null
 
     abstract fun getStateComposition(
-        dispatcher: IDispatcher,
+        dispatcher: Dispatcher,
         state: State<TState>
     ): @Composable () -> Unit
 
-    override fun setStore(store: IStore<TState>) {
+    override fun setStore(store: Store<TState>) {
         super.setStore(store)
 
         val compositionState = mutableStateOf(store.stateFlow.value)
@@ -33,7 +33,7 @@ abstract class CompositionMiddleware<TState : Any> : BaseMiddleware<TState>() {
         )
     }
 
-    override fun reduce(state: TState, action: IAction): TState {
+    override fun reduce(state: TState, action: Action): TState {
         val newState = reduceNext(state, action)
 
         applyAndRecomposeNewState(newState)

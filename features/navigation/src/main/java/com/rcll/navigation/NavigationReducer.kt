@@ -1,19 +1,19 @@
 package com.rcll.navigation
 
-import com.rcll.core.api.IAction
-import com.rcll.core.api.IReducer
+import com.rcll.core.api.Action
+import com.rcll.core.api.Reducer
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 
-interface NavigationReducer<TKey, TValue> : IReducer<Navigation<TKey, TValue>>
+interface NavigationReducer<TKey, TValue> : Reducer<Navigation<TKey, TValue>>
 
-open class NavigationReducerImpl<TKey, TValue>(
-    private val tabReducer: IReducer<TValue>,
+open class NavigationReducerImpl<TKey, TValue : Any>(
+    private val tabReducer: Reducer<TValue>,
 ) : NavigationReducer<TKey, TValue> {
     @Suppress("UNCHECKED_CAST")
     override fun reduce(
         state: Navigation<TKey, TValue>,
-        action: IAction
+        action: Action
     ): Navigation<TKey, TValue> {
         val newTabs = state.tabs.mutate { mutableTabs ->
             state.tabs.forEachIndexed { index, tab ->

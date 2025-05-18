@@ -4,15 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
-import com.rcll.core.api.IDispatcher
-import com.rcll.core.api.IStore
+import com.rcll.core.api.Dispatcher
+import com.rcll.core.api.Store
 
-val LocalStoreDispatcher = compositionLocalOf<IDispatcher> { error("No dispatcher provide") }
+val LocalStoreDispatcher = compositionLocalOf<Dispatcher> { error("No dispatcher provide") }
 val LocalStoreState = compositionLocalOf<Any> { error("No state provide") }
 
 @Composable
 inline fun StoreProviders(
-    store: IStore<*>,
+    store: Store<*>,
     crossinline content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
@@ -25,7 +25,7 @@ inline fun StoreProviders(
 
 @Composable
 inline fun StoreDispatcherProvider(
-    dispatcher: IDispatcher,
+    dispatcher: Dispatcher,
     crossinline content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(LocalStoreDispatcher provides dispatcher) {

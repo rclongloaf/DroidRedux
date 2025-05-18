@@ -1,9 +1,11 @@
 package com.rcll.droidredux.redux
 
+import androidx.compose.runtime.Stable
 import com.rcll.droidredux.redux.domain.DomainData
 import com.rcll.droidredux.redux.entities.Entities
 import com.rcll.mainscreen.MainScreen
 
+@Stable
 data class AppState(
     val domain: DomainData = DomainData(),
     val entities: Entities = Entities(),
