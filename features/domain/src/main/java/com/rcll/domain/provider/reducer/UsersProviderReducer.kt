@@ -1,20 +1,24 @@
 package com.rcll.domain.provider.reducer
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.rcll.core.api.Action
 import com.rcll.core.api.Reducer
+import com.rcll.domain.provider.MutableUsersProvider
 import com.rcll.domain.provider.UsersProvider
 import com.rcll.domain.provider.UsersProviderAction
 import kotlinx.collections.immutable.persistentHashMapOf
 import kotlinx.collections.immutable.persistentHashSetOf
 
-interface UsersProviderReducer : Reducer<UsersProvider>
+interface UsersProviderReducer : Reducer<MutableUsersProvider>
 
 class UsersProviderReducerImpl : UsersProviderReducer {
-    override fun reduce(state: UsersProvider, action: Action): UsersProvider {
+    override fun reduce(state: MutableUsersProvider, action: Action): MutableUsersProvider {
         if (action !is UsersProviderAction) return state
 
-        var fetchingStatusSet = state.fetchingStatusSet
-        var errorStatusMap = state.errorStatusMap
+        var fetchingStatusSet by state.fetchingStatusSet
+        var errorStatusMap by state.errorStatusMap
 
         when (action) {
             UsersProviderAction.Clear -> {
@@ -41,9 +45,6 @@ class UsersProviderReducerImpl : UsersProviderReducer {
             }
         }
 
-        return state.smartCopy(
-            fetchingStatusSet = fetchingStatusSet,
-            errorStatusMap = errorStatusMap,
-        )
+        return state
     }
 }

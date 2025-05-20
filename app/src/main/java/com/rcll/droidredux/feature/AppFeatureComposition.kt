@@ -1,7 +1,6 @@
 package com.rcll.droidredux.feature
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import com.rcll.core.base.StoreProviders
 import com.rcll.core.composition.runBypassComposition
 import com.rcll.droidredux.redux.AppStateFeature
@@ -25,9 +24,7 @@ class AppFeatureComposition : KoinComponent {
     @Composable
     private fun FeatureComposition() {
         StoreProviders(store) {
-            val state = store.stateFlow.collectAsState()
-
-            AppStateFeature(state.value)
+            AppStateFeature(store.state.value)
         }
     }
 }

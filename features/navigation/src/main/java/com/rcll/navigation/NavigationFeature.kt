@@ -8,7 +8,7 @@ fun <TKey, TValue> NavigationFeature(
     navigation: Navigation<TKey, TValue>,
     tabFeature: @Composable (Tab<TKey, TValue>) -> Unit
 ) {
-    for (tab in navigation.tabs) {
+    for (tab in navigation.tabs.value) {
         key(tab.key) { tabFeature(tab) }
     }
 }

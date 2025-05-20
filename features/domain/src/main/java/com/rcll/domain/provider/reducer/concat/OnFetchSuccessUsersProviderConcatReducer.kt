@@ -1,7 +1,7 @@
 package com.rcll.domain.provider.reducer.concat
 
-import com.rcll.core.api.Reducer
 import com.rcll.core.error.notConsistentState
+import com.rcll.core.middlewares.concat.ActionConsumer
 import com.rcll.core.middlewares.concat.filtered.FilteredConcatReducer
 import com.rcll.domain.cache.UsersCacheAction
 import com.rcll.domain.provider.UsersProviderAction
@@ -19,12 +19,12 @@ class OnFetchSuccessUsersProviderConcatReducer
     override fun <TState : Any> reduceBeforeNextReducer(
         state: TState,
         action: UsersProviderAction.OnFetchSuccess,
-        newActionReducer: Reducer<TState>
-    ): TState {
+        newActionConsumer: ActionConsumer<TState>
+    ) {
         if (!usersProviderSelector.isFetching(state, action.id)) {
             notConsistentState("Fetching user not exists")
         }
 
-        return newActionReducer.reduce(state, UsersCacheAction.Add(action.id, action.data))
+        newActionConsumer.consume(state, UsersCacheAction.Add(action.id, action.data))
     }
 }

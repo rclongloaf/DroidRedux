@@ -2,21 +2,21 @@ package com.rcll.mainscreen.common.reducer
 
 import com.rcll.core.api.Action
 import com.rcll.core.api.Reducer
-import com.rcll.mainscreen.MainScreen
+import com.rcll.mainscreen.MutableMainScreen
 import com.rcll.mainscreen.init.reducers.reduceInit
 import com.rcll.mainscreen.ready.reducers.MainScreenReadyReducer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-interface MainScreenReducer : Reducer<MainScreen>
+interface MainScreenReducer : Reducer<MutableMainScreen>
 
 class MainScreenReducerImpl : MainScreenReducer, KoinComponent {
     private val readyReducer: MainScreenReadyReducer by inject()
 
-    override fun reduce(state: MainScreen, action: Action): MainScreen {
+    override fun reduce(state: MutableMainScreen, action: Action): MutableMainScreen {
         return when (state) {
-            is MainScreen.Init -> reduceInit(state, action)
-            is MainScreen.Ready -> readyReducer.reduce(state, action)
+            is MutableMainScreen.Init -> reduceInit(state, action)
+            is MutableMainScreen.Ready -> readyReducer.reduce(state, action)
         }
     }
 }

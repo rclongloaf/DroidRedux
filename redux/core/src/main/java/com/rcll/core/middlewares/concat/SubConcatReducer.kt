@@ -1,7 +1,6 @@
 package com.rcll.core.middlewares.concat
 
 import com.rcll.core.api.Action
-import com.rcll.core.api.Reducer
 
 /**
  * Используется для делегирования обработки дополнительных экшенов транзакции дочерним состояниям.
@@ -18,19 +17,17 @@ interface SubConcatReducer<TSubState> {
      * @param state Текущее состояние до выполнения входящего экшена [action].
      * @param subState Состояние поддерева [state]-а.
      * @param action Обрабатываемый экшен.
-     * @param newActionReducer Редюсер для обработки новых экшенов.
+     * @param newActionConsumer Обработчик новых экшенов.
      *
-     * @return Если применяется новый экшен, то возвращается результат [newActionReducer]
+     * @return Если применяется новый экшен, то возвращается результат [newActionConsumer]
      * с новым экшеном в качестве аргумента, иначе возвращается [state].
      */
     fun <TState : Any> reduceBeforeNextReducer(
         state: TState,
         subState: TSubState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
-        return state
-    }
+        newActionConsumer: ActionConsumer<TState>
+    ) {}
 
     /**
      * Здесь следует применять экшены, которые должны изменить стейт после
@@ -42,17 +39,15 @@ interface SubConcatReducer<TSubState> {
      * @param state Текущее состояние после выполнения входящего экшена [action].
      * @param subState Состояние поддерева [state]-а.
      * @param action Обрабатываемый экшен.
-     * @param newActionReducer Редюсер для обработки новых экшенов.
+     * @param newActionConsumer Обработчик новых экшенов.
      *
-     * @return Если применяется новый экшен, то возвращается результат [newActionReducer]
+     * @return Если применяется новый экшен, то возвращается результат [newActionConsumer]
      * с новым экшеном в качестве аргумента, иначе возвращается [state].
      */
     fun <TState : Any> reduceAfterNextReducer(
         state: TState,
         subState: TSubState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
-        return state
-    }
+        newActionConsumer: ActionConsumer<TState>
+    ) {}
 }

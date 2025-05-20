@@ -6,12 +6,12 @@ import com.rcll.domain.provider.reducer.UsersProviderReducer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-interface ProvidersReducer : Reducer<Providers>
+interface ProvidersReducer : Reducer<MutableProviders>
 
 class ProvidersReducerImpl : ProvidersReducer, KoinComponent {
     private val usersProviderReducer: UsersProviderReducer by inject()
 
-    override fun reduce(state: Providers, action: Action): Providers {
+    override fun reduce(state: MutableProviders, action: Action): MutableProviders {
         return state.smartCopy(
             usersProvider = usersProviderReducer.reduce(state.usersProvider, action)
         )

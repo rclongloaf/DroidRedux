@@ -6,12 +6,12 @@ import com.rcll.domain.cache.UsersCacheReducer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-interface DomainReducer : Reducer<DomainData>
+interface DomainReducer : Reducer<MutableDomainData>
 
 class DomainReducerImpl : DomainReducer, KoinComponent {
     private val usersCacheReducer: UsersCacheReducer by inject()
 
-    override fun reduce(state: DomainData, action: Action): DomainData {
+    override fun reduce(state: MutableDomainData, action: Action): MutableDomainData {
         return state.smartCopy(
             usersCache = usersCacheReducer.reduce(state.usersCache, action)
         )

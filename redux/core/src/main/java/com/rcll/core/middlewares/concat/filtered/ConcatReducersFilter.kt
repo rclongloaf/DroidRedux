@@ -1,7 +1,7 @@
 package com.rcll.core.middlewares.concat.filtered
 
 import com.rcll.core.api.Action
-import com.rcll.core.api.Reducer
+import com.rcll.core.middlewares.concat.ActionConsumer
 import com.rcll.core.middlewares.concat.ConcatReducer
 
 /**
@@ -15,32 +15,24 @@ class ConcatReducersFilter(
     override fun <TState : Any> reduceBeforeNextReducer(
         state: TState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
-        var newState = state
-
+        newActionConsumer: ActionConsumer<TState>
+    ) {
         val filteredConcatReducers = filteredConcatReducersProvider.getConcatReducers(action::class)
 
         filteredConcatReducers.forEach { concatReducer ->
-            newState = concatReducer.reduceBeforeNextReducerUntyped(state, action, newActionReducer)
+            concatReducer.reduceBeforeNextReducerUntyped(state, action, newActionConsumer)
         }
-
-        return newState
     }
 
     override fun <TState : Any> reduceAfterNextReducer(
         state: TState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
-        var newState = state
-
+        newActionConsumer: ActionConsumer<TState>
+    ) {
         val filteredConcatReducers = filteredConcatReducersProvider.getConcatReducers(action::class)
 
         filteredConcatReducers.forEach { concatReducer ->
-            newState = concatReducer.reduceAfterNextReducerUntyped(state, action, newActionReducer)
+            concatReducer.reduceAfterNextReducerUntyped(state, action, newActionConsumer)
         }
-
-        return newState
     }
 }
