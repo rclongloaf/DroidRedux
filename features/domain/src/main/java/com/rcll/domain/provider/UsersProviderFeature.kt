@@ -13,7 +13,7 @@ fun UsersProviderFeature(
 ) {
     val dispatcher = LocalStoreDispatcher.current
 
-    usersProvider.fetchingStatusSet.forEach { userId ->
+    usersProvider.fetchingStatusSet.value.forEach { userId ->
         key(userId) {
             LaunchedEffect(userId) {
                 delay(1000)

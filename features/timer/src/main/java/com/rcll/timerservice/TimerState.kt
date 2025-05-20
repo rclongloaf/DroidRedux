@@ -1,25 +1,14 @@
 package com.rcll.timerservice
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 
-data class Timer(
-    val key: TimerKey,
-    val timerState: TimerState = TimerState.Inactive
-) {
-    fun smartCopy(
-        key: TimerKey,
-        state: TimerState
-    ): Timer {
-        if (this.key != key ||
-            this.timerState != state
-        ) {
-            return Timer(
-                key = key,
-                timerState = state
-            )
-        }
-        return this
-    }
+@Stable
+interface Timer {
+    val key: TimerKey
+    val timerState: State<TimerState>
 }
 
 @JvmInline
@@ -32,3 +21,8 @@ sealed interface TimerState {
     data object Inactive : TimerState
     data object Active : TimerState
 }
+
+data class MutableTimer(
+    override val key: TimerKey,
+    override val timerState: MutableState<TimerState> = mutableStateOf(TimerState.Inactive)
+) : Timer

@@ -5,7 +5,7 @@ import com.rcll.timerservice.active.handlers.TimerActiveHandler
 
 @Composable
 fun TimerFeature(timer: Timer) {
-    val state = timer.timerState
+    val state = timer.timerState.value
     when (state) {
         is TimerState.Active -> TimerActiveHandler(timer.key)
         TimerState.Inactive -> Unit

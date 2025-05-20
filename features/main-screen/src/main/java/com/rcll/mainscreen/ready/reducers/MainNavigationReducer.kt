@@ -8,9 +8,10 @@ import com.rcll.navigation.NavigationReducerImpl
 
 interface MainNavigationReducer : NavigationReducer<MainTabKey, String>
 
-class MainNavigationReducerImpl : NavigationReducerImpl<MainTabKey, String>(object :
-    Reducer<String> {
-    override fun reduce(state: String, action: Action): String {
-        return state
+class MainNavigationReducerImpl : NavigationReducerImpl<MainTabKey, String>(
+    tabReducer = object : Reducer<String> {
+        override fun reduce(state: String, action: Action): String {
+            return state
+        }
     }
-}), MainNavigationReducer
+), MainNavigationReducer

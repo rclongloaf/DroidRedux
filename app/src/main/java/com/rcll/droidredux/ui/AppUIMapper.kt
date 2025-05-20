@@ -11,7 +11,7 @@ import com.rcll.mainscreen.ui.MainScreenUIMapper
 fun AppUIMapper(appUIState: MutableState<AppUI>, state: AppState) {
     val mainScreenUIState = rememberLateinitMutableState<MainScreenUI>()
 
-    MainScreenUIMapper(mainScreenUIState, state.ui)
+    MainScreenUIMapper(mainScreenUIState, state.ui.value)
 
     appUIState.value = AppUI(
         mainScreenUI = mainScreenUIState

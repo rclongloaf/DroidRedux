@@ -1,7 +1,7 @@
 package com.rcll.mainscreen.common.reducer.concat
 
 import com.rcll.core.api.Action
-import com.rcll.core.api.Reducer
+import com.rcll.core.middlewares.concat.ActionConsumer
 import com.rcll.core.middlewares.concat.SubConcatReducer
 import com.rcll.mainscreen.MainScreen
 import com.rcll.mainscreen.ready.actions.CounterAction
@@ -14,13 +14,13 @@ internal class MainScreenSubConcatReducerImpl : MainScreenSubConcatReducer {
         state: TState,
         subState: MainScreen,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
+        newActionConsumer: ActionConsumer<TState>
+    ) {
         if (subState !is MainScreen.Ready ||
             action !is TimerEvent ||
             action.key != subState.timer.key
-        ) return state
+        ) return
 
-        return newActionReducer.reduce(state, CounterAction.Increase)
+        newActionConsumer.consume(state, CounterAction.Increase)
     }
 }

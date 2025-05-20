@@ -5,14 +5,14 @@ import com.rcll.core.base.BaseMiddleware
 
 class ConcatMiddleware<TState : Any>(
     private val concatReducersProvider: ConcatReducersProvider
-) : BaseMiddleware<TState>() {
+) : BaseMiddleware<TState>(), ActionConsumer<TState> {
 
     /**
      * Запускает рекурсивную цепочку обработки экшена.
      * 1. Для каждого [ConcatReducer]-а выполняется [ConcatReducer.reduceBeforeNextReducer].
      * 2. Внутри [ConcatReducer.reduceBeforeNextReducer] может вызваться переданный редюсер,
-     * который является [reduce], для рекурсивной обработки новых экшенов.
-     * 3. Выполняется [reduceNext] для текущего экшена.
+     * который является [consumeAsync], для рекурсивной обработки новых экшенов.
+     * 3. Выполняется [consumeNextAsync] для текущего экшена.
      * 4. Для тех же [ConcatReducer]-ов аналогично выполняется [ConcatReducer.reduceAfterNextReducer]
      *
      * @param state Текущий стейт, который был передан от предыдущего middleware-а, или стейт,
@@ -22,21 +22,21 @@ class ConcatMiddleware<TState : Any>(
      *
      * @return Новый стейт, полученный после рекурсивного применения всех экшенов.
      */
-    override fun reduce(state: TState, action: Action): TState {
-        var newState = state
+    override suspend fun consumeAsync(state: TState, action: Action) {
+        consume(state, action)
+    }
 
+    override fun consume(state: TState, action: Action) {
         val concatReducers = concatReducersProvider.getConcatReducers()
 
         concatReducers.forEach { concatReducer ->
-            newState = concatReducer.reduceBeforeNextReducer(newState, action, this)
+            concatReducer.reduceBeforeNextReducer(state, action, this)
         }
 
-        newState = reduceNext(newState, action)
+        consumeNext(state, action)
 
         concatReducers.forEach { concatReducer ->
-            newState = concatReducer.reduceAfterNextReducer(newState, action, this)
+            concatReducer.reduceAfterNextReducer(state, action, this)
         }
-
-        return newState
     }
 }

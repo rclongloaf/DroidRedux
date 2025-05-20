@@ -1,5 +1,6 @@
 package com.rcll.droidredux.redux.domain.users
 
+import androidx.compose.runtime.State
 import com.rcll.domain.cache.UsersCacheSelector
 import com.rcll.domain.dto.UserData
 import com.rcll.domain.dto.UserId
@@ -16,13 +17,13 @@ class UsersCacheSelectorImpl : UsersCacheSelector, KoinComponent {
     }
 
     override fun get(state: Any, id: UserId): UserData {
-        return getUsers(state).getValue(id)
+        return getUsers(state).getValue(id).value
     }
 
     override fun getOrNull(state: Any, id: UserId): UserData? {
-        return getUsers(state)[id]
+        return getUsers(state)[id]?.value
     }
 
-    private fun getUsers(state: Any): PersistentMap<UserId, UserData> =
-        domainSelector.get(state).usersCache.usersMap
+    private fun getUsers(state: Any): PersistentMap<UserId, State<UserData>> =
+        domainSelector.get(state).usersCache.usersMap.value
 }

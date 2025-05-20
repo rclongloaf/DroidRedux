@@ -18,7 +18,7 @@ fun <TKey, TValue, TValueUI : Any> NavigationUIMapper(
     navigation: Navigation<TKey, TValue>,
     activeTabUIMapper: @Composable (MutableState<TValueUI>, Tab<TKey, TValue>) -> Unit,
 ) {
-    val activeTab = navigation.tabs.find { it.key == navigation.activeTabKey }
+    val activeTab = navigation.tabs.value.find { it.key == navigation.activeTabKey.value }
         ?: error("Active tab not found")
 
     val tabsUIState = rememberLateinitMutableState<ImmutableList<TabUI>>()
@@ -42,11 +42,11 @@ private fun <TKey, TValue> TabsUIMapper(
     val dispatcher = LocalStoreDispatcher.current
 
     tabsUIState.value = persistentListOf<TabUI>().mutate { mutator ->
-        navigation.tabs.forEach { tab ->
+        navigation.tabs.value.forEach { tab ->
             mutator.add(
                 TabUI(
                     title = tab.key.toString(), // for example
-                    isActive = tab.key == navigation.activeTabKey,
+                    isActive = tab.key == navigation.activeTabKey.value,
                     onClick = {
                         dispatcher.dispatch(
                             NavigationAction.SelectTab<TKey, TValue>(

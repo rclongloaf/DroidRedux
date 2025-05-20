@@ -18,21 +18,21 @@ class UsersProviderSelectorImpl : UsersProviderSelector, KoinComponent {
     override fun isFetching(state: Any, id: UserId): Boolean {
         val usersProvider = getProvider(state)
 
-        return usersProvider.fetchingStatusSet.contains(id)
+        return usersProvider.fetchingStatusSet.value.contains(id)
     }
 
     override fun hasError(state: Any, id: UserId): Boolean {
         val usersProvider = getProvider(state)
 
-        return usersProvider.errorStatusMap.containsKey(id)
+        return usersProvider.errorStatusMap.value.containsKey(id)
     }
 
     override fun getStatusLCER(state: Any, id: UserId): StatusLCER<UserData, UserRequestError> {
         val userProvider = getProvider(state)
 
         val cachedData = usersCacheSelector.getOrNull(state, id)
-        val isFetching = userProvider.fetchingStatusSet.contains(id)
-        val requestError = userProvider.errorStatusMap[id]
+        val isFetching = userProvider.fetchingStatusSet.value.contains(id)
+        val requestError = userProvider.errorStatusMap.value[id]
 
         return when {
             cachedData != null && isFetching -> StatusLCER.ContentWithLoading(cachedData)

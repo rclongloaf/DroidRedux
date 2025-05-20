@@ -17,7 +17,17 @@ class DynamicMiddleware<TState : Any>(
     /**
      * Выполняет отправку экшенов в динамически изменяемый список
      */
-    override fun reduce(state: TState, action: Action): TState {
+    override suspend fun consumeAsync(state: TState, action: Action) {
+        notifyObservers(action)
+        consumeNextAsync(state, action)
+    }
+
+    override fun consume(state: TState, action: Action) {
+        notifyObservers(action)
+        consumeNext(state, action)
+    }
+
+    private fun notifyObservers(action: Action) {
         val dynamicMiddlewares = dynamicActionObserversManager
             .dynamicActionObserversMap[action::class]
             ?: persistentListOf()
@@ -25,8 +35,6 @@ class DynamicMiddleware<TState : Any>(
         dynamicMiddlewares.forEach { dynamicMiddleware ->
             dynamicMiddleware.observeActionUntyped(action)
         }
-
-        return reduceNext(state, action)
     }
 }
 

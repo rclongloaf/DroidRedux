@@ -5,6 +5,7 @@ import com.rcll.core.middlewares.concat.ConcatMiddleware
 import com.rcll.core.middlewares.concat.ConcatReducersProvider
 import com.rcll.core.middlewares.dynamic.DynamicMiddleware
 import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManager
+import com.rcll.core.middlewares.parallel.ParallelMiddleware
 import com.rcll.core.middlewares.rollback.RollbackMiddleware
 import com.rcll.droidredux.redux.reducer.AppStateReducer
 import kotlinx.coroutines.CoroutineScope
@@ -16,8 +17,9 @@ class AppStore(
     concatReducersProvider: ConcatReducersProvider,
     dynamicActionObserversManager: DynamicActionObserversManager
 ) : BaseStore<AppState>(
-    initialState = AppState(),
+    initialState = MutableAppState(),
     middlewares = listOf(
+        ParallelMiddleware(4),
         RollbackMiddleware(),
         ConcatMiddleware(concatReducersProvider),
         DynamicMiddleware(dynamicActionObserversManager)
