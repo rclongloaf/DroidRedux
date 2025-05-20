@@ -3,26 +3,23 @@ package com.rcll.mainscreen.ready.reducers
 import com.rcll.core.api.Action
 import com.rcll.core.api.Reducer
 import com.rcll.mainscreen.MainScreen
+import com.rcll.mainscreen.MutableMainScreen
 import com.rcll.mainscreen.ready.actions.CounterAction
 import com.rcll.timerservice.TimerReducer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-interface MainScreenReadyReducer : Reducer<MainScreen.Ready>
+interface MainScreenReadyReducer : Reducer<MutableMainScreen.Ready>
 
 class MainScreenReadyReducerImpl : MainScreenReadyReducer, KoinComponent {
     private val timerReducer: TimerReducer by inject()
     private val navigationReducer: MainNavigationReducer by inject()
 
-    override fun reduce(state: MainScreen.Ready, action: Action): MainScreen.Ready {
-        val newTimer = timerReducer.reduce(state.timer, action)
-        val newCounter = reduceCounter(state.counter, action)
-        val newNavigation = navigationReducer.reduce(state.navigation, action)
-
+    override fun reduce(state: MutableMainScreen.Ready, action: Action): MutableMainScreen.Ready {
         return state.smartCopy(
-            newCounter = newCounter,
-            newTimer = newTimer,
-            newNavigation = newNavigation
+            newCounter = reduceCounter(state.counter, action),
+            newTimer = timerReducer.reduce(state.timer, action),
+            newNavigation = navigationReducer.reduce(state.navigation, action)
         )
     }
 

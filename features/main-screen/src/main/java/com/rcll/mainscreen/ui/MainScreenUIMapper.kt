@@ -15,7 +15,7 @@ fun MainScreenUIMapper(
     mainScreen: MainScreen
 ) {
     mainScreenUIState.value = when (mainScreen) {
-        MainScreen.Init -> MainScreenUI.Init
+        is MainScreen.Init -> MainScreenUI.Init
         is MainScreen.Ready -> {
             val navigationUIState = rememberLateinitMutableState<NavigationUI<MainTabUI>>()
             NavigationUIMapper(

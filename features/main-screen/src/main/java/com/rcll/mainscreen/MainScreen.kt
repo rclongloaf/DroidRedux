@@ -1,20 +1,32 @@
 package com.rcll.mainscreen
 
 import com.rcll.mainscreen.ready.MainTabKey
+import com.rcll.navigation.MutableNavigation
 import com.rcll.navigation.Navigation
+import com.rcll.timerservice.MutableTimer
 import com.rcll.timerservice.Timer
 
 sealed interface MainScreen {
-    data object Init : MainScreen
-    data class Ready(
-        val counter: Int,
-        val timer: Timer,
+    sealed interface Init : MainScreen
+    sealed interface Ready : MainScreen {
+        val counter: Int
+        val timer: Timer
         val navigation: Navigation<MainTabKey, String>
-    ) : MainScreen {
+    }
+}
+
+sealed interface MutableMainScreen : MainScreen {
+    data object Init : MutableMainScreen, MainScreen.Init
+    data class Ready(
+        override val counter: Int,
+        override val timer: MutableTimer,
+        override val navigation: MutableNavigation<MainTabKey, String>
+    ) : MutableMainScreen, MainScreen.Ready {
+
         fun smartCopy(
             newCounter: Int,
-            newTimer: Timer,
-            newNavigation: Navigation<MainTabKey, String>
+            newTimer: MutableTimer,
+            newNavigation: MutableNavigation<MainTabKey, String>
         ): Ready {
             if (newCounter != counter ||
                 newTimer !== timer ||

@@ -1,7 +1,6 @@
 package com.rcll.core.middlewares.concat
 
 import com.rcll.core.api.Action
-import com.rcll.core.api.Reducer
 
 /**
  * Используется [ConcatMiddleware]-ой для обработки дополнительных экшенов транзакции.
@@ -17,16 +16,16 @@ interface ConcatReducer {
      *
      * @param state Текущее состояние до выполнения входящего экшена [action].
      * @param action Обрабатываемый экшен.
-     * @param newActionReducer Редюсер для обработки новых экшенов.
+     * @param newActionConsumer Обработчик новых экшенов.
      *
-     * @return Если применяется новый экшен, то возвращается результат [newActionReducer] с новым экшеном
+     * @return Если применяется новый экшен, то возвращается результат [newActionConsumer] с новым экшеном
      * в качестве аргумента, иначе возвращается [state].
      */
     fun <TState : Any> reduceBeforeNextReducer(
         state: TState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState
+        newActionConsumer: ActionConsumer<TState>
+    )
 
     /**
      * Здесь следует применять экшены, которые должны изменить стейт после
@@ -37,14 +36,14 @@ interface ConcatReducer {
      *
      * @param state Текущее состояние после выполнения входящего экшена [action].
      * @param action Обрабатываемый экшен.
-     * @param newActionReducer Редюсер для обработки новых экшенов.
+     * @param newActionConsumer Обработчик новых экшенов.
      *
-     * @return Если применяется новый экшен, то возвращается результат [newActionReducer]
+     * @return Если применяется новый экшен, то возвращается результат [newActionConsumer]
      * с новым экшеном в качестве аргумента, иначе возвращается [state].
      */
     fun <TState : Any> reduceAfterNextReducer(
         state: TState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState
+        newActionConsumer: ActionConsumer<TState>
+    )
 }

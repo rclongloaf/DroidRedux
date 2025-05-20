@@ -1,13 +1,13 @@
 package com.rcll.core.api
 
+import androidx.compose.runtime.State
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
 
 interface Store<TState : Any> : Dispatcher {
     /**
      * Поток состояния стора.
      */
-    val stateFlow: StateFlow<TState>
+    val state: State<TState>
 
     /**
      * Cкоуп обработки экшенов. Должен иметь singleThread реализацию.

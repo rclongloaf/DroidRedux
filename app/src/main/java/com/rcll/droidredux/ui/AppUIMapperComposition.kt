@@ -26,9 +26,7 @@ class AppUIMapperComposition(
     @Composable
     private fun UIStateComposition() {
         StoreProviders(store) {
-            val state = store.stateFlow.collectAsState()
-
-            AppUIMapper(appUIStateProvider.mutableUIState, state.value)
+            AppUIMapper(appUIStateProvider.mutableUIState, store.state.value)
         }
     }
 }

@@ -1,13 +1,14 @@
 package com.rcll.timerservice.inactive.actions
 
-import com.rcll.core.api.Action
+import com.rcll.timerservice.TimerAction
+import com.rcll.timerservice.TimerKey
 
 /**
  * Интерфейс для экшенов, которые применяются в неактивном состоянии таймера
  */
-internal sealed interface InactiveStateAction : Action
+internal sealed interface InactiveStateAction : TimerAction
 
 /**
  * Перевеводит таймер в активное состояние
  */
-data class ActivateTimer(val key: Any) : InactiveStateAction
+data class ActivateTimer(override val key: TimerKey) : InactiveStateAction

@@ -1,7 +1,7 @@
 package com.rcll.core.middlewares.concat.filtered
 
 import com.rcll.core.api.Action
-import com.rcll.core.api.Reducer
+import com.rcll.core.middlewares.concat.ActionConsumer
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
@@ -19,10 +19,10 @@ abstract class FilteredConcatReducer<TAction : Action> {
     internal fun <TState : Any> reduceBeforeNextReducerUntyped(
         state: TState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
+        newActionConsumer: ActionConsumer<TState>
+    ) {
         val typedAction = actionFilterClass.cast(action)
-        return reduceBeforeNextReducer(state, typedAction, newActionReducer)
+        reduceBeforeNextReducer(state, typedAction, newActionConsumer)
     }
 
     /**
@@ -34,26 +34,24 @@ abstract class FilteredConcatReducer<TAction : Action> {
      *
      * @param state Текущее состояние до выполнения входящего экшена [action].
      * @param action Обрабатываемый экшен с типом [actionFilterClass].
-     * @param newActionReducer Редюсер для обработки новых экшенов.
+     * @param newActionConsumer Обработчик новых экшенов.
      *
-     * @return Если применяется новый экшен, то возвращается результат [newActionReducer] с новым экшеном
+     * @return Если применяется новый экшен, то возвращается результат [newActionConsumer] с новым экшеном
      * в качестве аргумента, иначе возвращается [state].
      */
     open fun <TState : Any> reduceBeforeNextReducer(
         state: TState,
         action: TAction,
-        newActionReducer: Reducer<TState>
-    ): TState {
-        return state
-    }
+        newActionConsumer: ActionConsumer<TState>
+    ) {}
 
     internal fun <TState : Any> reduceAfterNextReducerUntyped(
         state: TState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
+        newActionConsumer: ActionConsumer<TState>
+    ) {
         val typedAction = actionFilterClass.cast(action)
-        return reduceAfterNextReducer(state, typedAction, newActionReducer)
+        reduceAfterNextReducer(state, typedAction, newActionConsumer)
     }
 
     /**
@@ -65,16 +63,14 @@ abstract class FilteredConcatReducer<TAction : Action> {
      *
      * @param state Текущее состояние после выполнения входящего экшена [action].
      * @param action Обрабатываемый экшен с типом [actionFilterClass].
-     * @param newActionReducer Редюсер для обработки новых экшенов.
+     * @param newActionConsumer Обработчик новых экшенов.
      *
-     * @return Если применяется новый экшен, то возвращается результат [newActionReducer]
+     * @return Если применяется новый экшен, то возвращается результат [newActionConsumer]
      * с новым экшеном в качестве аргумента, иначе возвращается [state].
      */
     open fun <TState : Any> reduceAfterNextReducer(
         state: TState,
         action: TAction,
-        newActionReducer: Reducer<TState>
-    ): TState {
-        return state
-    }
+        newActionConsumer: ActionConsumer<TState>
+    ) {}
 }

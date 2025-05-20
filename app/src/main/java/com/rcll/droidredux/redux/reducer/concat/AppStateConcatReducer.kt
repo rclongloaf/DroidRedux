@@ -1,7 +1,7 @@
 package com.rcll.droidredux.redux.reducer.concat
 
 import com.rcll.core.api.Action
-import com.rcll.core.api.Reducer
+import com.rcll.core.middlewares.concat.ActionConsumer
 import com.rcll.core.middlewares.concat.ConcatReducer
 import com.rcll.droidredux.redux.AppState
 import com.rcll.mainscreen.common.reducer.concat.MainScreenSubConcatReducer
@@ -14,30 +14,30 @@ class AppStateConcatReducer : ConcatReducer, KoinComponent {
     override fun <TState : Any> reduceBeforeNextReducer(
         state: TState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
+        newActionConsumer: ActionConsumer<TState>
+    ) {
         val appState = state as AppState
 
         return mainScreenSubConcatReducer.reduceBeforeNextReducer(
             state = state,
-            subState = appState.ui,
+            subState = appState.ui.value,
             action = action,
-            newActionReducer = newActionReducer
+            newActionConsumer = newActionConsumer
         )
     }
 
     override fun <TState : Any> reduceAfterNextReducer(
         state: TState,
         action: Action,
-        newActionReducer: Reducer<TState>
-    ): TState {
+        newActionConsumer: ActionConsumer<TState>
+    ) {
         val appState = state as AppState
 
         return mainScreenSubConcatReducer.reduceAfterNextReducer(
             state = state,
-            subState = appState.ui,
+            subState = appState.ui.value,
             action = action,
-            newActionReducer = newActionReducer
+            newActionConsumer = newActionConsumer
         )
     }
 }

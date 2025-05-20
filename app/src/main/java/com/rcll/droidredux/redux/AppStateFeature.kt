@@ -9,7 +9,7 @@ import com.rcll.timerservice.TimerFeature
 @Composable
 fun AppStateFeature(state: AppState) {
     EntitiesFeature(state.entities)
-    MainScreenFeature(state.ui)
+    MainScreenFeature(state.ui.value)
 }
 
 @Composable

@@ -1,69 +1,67 @@
 package com.rcll.navigation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.rcll.core.api.Action
 import com.rcll.core.api.Reducer
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 
-interface NavigationReducer<TKey, TValue> : Reducer<Navigation<TKey, TValue>>
+interface NavigationReducer<TKey, TValue> : Reducer<MutableNavigation<TKey, TValue>>
 
 open class NavigationReducerImpl<TKey, TValue : Any>(
     private val tabReducer: Reducer<TValue>,
 ) : NavigationReducer<TKey, TValue> {
     @Suppress("UNCHECKED_CAST")
     override fun reduce(
-        state: Navigation<TKey, TValue>,
+        state: MutableNavigation<TKey, TValue>,
         action: Action
-    ): Navigation<TKey, TValue> {
-        val newTabs = state.tabs.mutate { mutableTabs ->
-            state.tabs.forEachIndexed { index, tab ->
-                val newValue = tabReducer.reduce(tab.data, action)
+    ): MutableNavigation<TKey, TValue> {
+        var tabs by state.tabs
+        tabs = tabs.mutate { mutableTabs ->
+            tabs.forEachIndexed { index, tab ->
+                val newData = tabReducer.reduce(tab.data, action)
 
-                if (newValue != tab.data) {
-                    mutableTabs[index] = Tab(tab.key, newValue)
+                if (newData != tab.data) {
+                    mutableTabs[index] = Tab(tab.key, newData)
                 }
             }
         }
 
-        val newState = state.smartCopy(
-            key = state.key,
-            tabs = newTabs,
-            activeTabKey = state.activeTabKey
-        )
+        // Нормально привести к типу дженерика можно только через as?
+        val navigationAction =  (action as? NavigationAction<TKey, TValue>) ?: return state
 
-        (action as? NavigationAction<TKey, TValue>)?.let { navigationAction ->
-            return when (navigationAction) {
-                is NavigationAction.AddTab<TKey, TValue> -> applyAddTab(newState, navigationAction)
-                is NavigationAction.SelectTab<TKey, TValue> -> applySelectTab(
-                    newState,
-                    navigationAction
-                )
-            }
+        if (navigationAction.navigationKey != state.key) return state
+
+        return when (navigationAction) {
+            is NavigationAction.AddTab<TKey, TValue> -> applyAddTab(state, navigationAction)
+            is NavigationAction.SelectTab<TKey, TValue> -> applySelectTab(
+                state,
+                navigationAction
+            )
         }
-
-        return newState
     }
 
     private fun <TKey, TValue> applyAddTab(
-        navigation: Navigation<TKey, TValue>,
+        navigation: MutableNavigation<TKey, TValue>,
         action: NavigationAction.AddTab<TKey, TValue>
-    ): Navigation<TKey, TValue> {
-        if (navigation.key != action.navigationKey) return navigation
+    ): MutableNavigation<TKey, TValue> {
+        var tabs by navigation.tabs
 
-        return navigation.copy(
-            tabs = persistentListOf(action.tab).addAll(navigation.tabs)
-        )
+        tabs = tabs.add(action.tab)
+
+        return navigation
     }
 
     private fun <TKey, TValue> applySelectTab(
-        navigation: Navigation<TKey, TValue>,
+        navigation: MutableNavigation<TKey, TValue>,
         action: NavigationAction.SelectTab<TKey, TValue>
-    ): Navigation<TKey, TValue> {
-        if (navigation.key != action.navigationKey) return navigation
+    ): MutableNavigation<TKey, TValue> {
+        var activeTabKey by navigation.activeTabKey
 
-        return navigation.copy(
-            activeTabKey = action.tabKey
-        )
+        activeTabKey = action.tabKey
+
+        return navigation
     }
 
 }
