@@ -3,8 +3,11 @@ package com.rcll.droidredux
 import android.app.Application
 import com.rcll.core.api.Store
 import com.rcll.core.middlewares.concat.ConcatReducersProvider
+import com.rcll.core.middlewares.dynamic.DeferredDynamicActionsHolder
 import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManager
 import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManagerImpl
+import com.rcll.core.middlewares.dynamic.provider.DynamicActionObserversProvider
+import com.rcll.core.middlewares.dynamic.provider.DynamicActionObserversProviderImpl
 import com.rcll.core.ui.UIStateProvider
 import com.rcll.droidredux.feature.AppFeatureComposition
 import com.rcll.droidredux.redux.AppStore
@@ -32,7 +35,9 @@ class MyApplication : Application(), KoinComponent {
 
 val appModule = module {
     single<ConcatReducersProvider> { AppConcatReducersProvider() }
-    single<DynamicActionObserversManager> { DynamicActionObserversManagerImpl() }
+    single<DeferredDynamicActionsHolder> { DeferredDynamicActionsHolder() }
+    single<DynamicActionObserversProvider> { DynamicActionObserversProviderImpl() }
+    single<DynamicActionObserversManager> { DynamicActionObserversManagerImpl(get()) }
     singleOf(::AppStore) bind Store::class withOptions {
         createdAtStart()
     }

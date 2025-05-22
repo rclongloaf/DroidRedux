@@ -8,7 +8,7 @@ import com.rcll.timerservice.active.actions.TimerEvent
 import kotlinx.coroutines.delay
 
 @Composable
-internal fun TimerActiveHandler(key: TimerKey) {
+internal fun TimerActiveFeature(key: TimerKey) {
     val store = LocalStoreDispatcher.current
 
     LaunchedEffect(key) {

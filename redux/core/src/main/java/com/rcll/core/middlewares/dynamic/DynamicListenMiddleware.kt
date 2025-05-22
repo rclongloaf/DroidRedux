@@ -8,22 +8,24 @@ import androidx.compose.runtime.compositionLocalOf
 import com.rcll.core.api.Action
 import com.rcll.core.base.BaseMiddleware
 import com.rcll.core.middlewares.dynamic.manager.DynamicActionObserversManager
+import com.rcll.core.middlewares.dynamic.provider.DynamicActionObserversProvider
 import kotlinx.collections.immutable.persistentListOf
 
-class DynamicMiddleware<TState : Any>(
-    private val dynamicActionObserversManager: DynamicActionObserversManager
+class DynamicListenMiddleware<TState : Any>(
+    private val dynamicActionObserversProvider: DynamicActionObserversProvider,
+    private val deferredDynamicActionsHolder: DeferredDynamicActionsHolder
 ) : BaseMiddleware<TState>() {
 
     /**
      * Выполняет отправку экшенов в динамически изменяемый список
      */
     override fun reduce(state: TState, action: Action): TState {
-        val dynamicMiddlewares = dynamicActionObserversManager
+        val dynamicMiddlewares = dynamicActionObserversProvider
             .dynamicActionObserversMap[action::class]
             ?: persistentListOf()
 
         dynamicMiddlewares.forEach { dynamicMiddleware ->
-            dynamicMiddleware.observeActionUntyped(action)
+            deferredDynamicActionsHolder.add(action, dynamicMiddleware)
         }
 
         return reduceNext(state, action)

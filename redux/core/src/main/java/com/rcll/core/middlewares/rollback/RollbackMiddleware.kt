@@ -3,20 +3,33 @@ package com.rcll.core.middlewares.rollback
 import com.rcll.core.api.Action
 import com.rcll.core.base.BaseMiddleware
 import com.rcll.core.error.FatalTransactionException
-import com.rcll.core.error.TransactionException
+import com.rcll.core.error.NonFatalTransactionException
 
 class RollbackMiddleware<TState : Any> : BaseMiddleware<TState>() {
     override fun reduce(state: TState, action: Action): TState {
         var newState = state
         try {
-            newState = reduceNext(state, action)
+            newState = reduceNext(newState, action)
         } catch (e: FatalTransactionException) {
-            // todo log exception and maybe throw it
+            // log exception and throw it
+            /**
+             * Ошибки, которые могут нарушить работу приложения.
+             * Например не смогли применить экшен завершения асинхронной задачи.
+             * Повторно этот экшен уже не отправится и мы можем застрять, поэтому крашим.
+             */
             throw e
-        } catch (e: TransactionException) {
-            // todo log exception and ignore it
+        } catch (e: NonFatalTransactionException) {
+            // log exception and ignore it
+            /**
+             * Ошибки, которые не влияют на работу приложения.
+             * Например спам экшенами от кликов пользователся, или просто протухший экшен,
+             * когда стейт уже закрылся и некому принимать этот экшен.
+             * Пользователь может повторно кликнуть на кнопку и попытаться обработать экшен,
+             * поэтому может проигнорировать.
+             * (Но в основном это ошибка при получение протухших экшенов)
+             */
         } catch (e: Throwable) {
-            // todo log exception and throw
+            // log exception and throw
             throw e
         }
 

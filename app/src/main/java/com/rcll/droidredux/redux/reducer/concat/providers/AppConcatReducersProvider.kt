@@ -8,18 +8,14 @@ import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.collections.immutable.persistentListOf
 
 class AppConcatReducersProvider : ConcatReducersProvider {
-    private var concatReducers: ImmutableCollection<ConcatReducer>? = null
-
-    private fun createConcatReducers(): ImmutableCollection<ConcatReducer> = persistentListOf(
-        AppStateConcatReducer(),
-        ConcatReducersFilter(AppFilteredConcatReducersProvider())
-    )
+    private val concatReducers: ImmutableCollection<ConcatReducer> by lazy {
+        persistentListOf(
+            AppStateConcatReducer(),
+            ConcatReducersFilter(AppFilteredConcatReducersProvider())
+        )
+    }
 
     override fun getConcatReducers(): ImmutableCollection<ConcatReducer> {
-        var concatReducers = this.concatReducers
-        if (concatReducers == null) {
-            concatReducers = createConcatReducers()
-        }
         return concatReducers
     }
 }
